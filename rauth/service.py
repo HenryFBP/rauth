@@ -213,7 +213,14 @@ class OAuth1Service(Service):
         self.request_token_response = session.request(method,
                                                       self.request_token_url,
                                                       **kwargs)
-        return self.request_token_response
+        tok_resp = self.request_token_response
+
+        # fail if we get 401 or something
+        if (tok_resp.reason != '200'):
+            raise Exception("OAUTH Token response is NOT HTTP 200, it is HTTP {}!\n"
+                            "Raw response: {}".format(tok_resp.reason, (tok_resp.content.decode('utf-8'))))
+
+        return tok_resp
 
     def get_request_token(self,
                           method='GET',
