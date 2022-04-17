@@ -6,6 +6,7 @@
     General utilities.
 '''
 
+import copy
 from rauth.compat import quote, parse_qsl, is_basestring
 
 from requests.structures import CaseInsensitiveDict as cidict
@@ -22,18 +23,19 @@ def absolute_url(url):
 
 def parse_utf8_qsl(s):
     d = dict(parse_qsl(s))
+    d2 = copy.deepcopy(d)
 
     for k, v in d.items():  # pragma: no cover
         if not isinstance(k, bytes) and not isinstance(v, bytes):
             # skip this iteration if we have no keys or values to update
             continue
-        d.pop(k)
+        d2.pop(k)
         if isinstance(k, bytes):
             k = k.decode('utf-8')
         if isinstance(v, bytes):
             v = v.decode('utf-8')
-        d[k] = v
-    return d
+        d2[k] = v
+    return d2
 
 
 def get_sorted_params(params):
